@@ -6,7 +6,7 @@ Un add-on Godot pour constituer un moteur data-driven pour des jeux d'actions et
 
 res://
   addons/
-  <details> <summary> <strong> autoload/ </strong></summary>
+  autoload/
   - [] game_database.gd
   - [] debug_console.gd
   - [] event_bus.gd
@@ -14,9 +14,9 @@ res://
   - [] interaction_engine.gd
   - [] conflict_mediator.gd
   - [] save_manager.gd
-  </details>
-  <details> <summary> <strong> core/ </strong></summary>
-    <details> <summary> <strong> value_objects/ </strong></summary>
+
+  core/ 
+    value_objects/
       - [] conflict_batch.gd
       - [] stat_block.gd
       - [] reaction_context.gd
@@ -26,9 +26,8 @@ res://
       - [] event_types.gd
       - [] effect_applier.gd
       - [] event_consumer.gd
-    </details>
-  </details>
-  <details> <summary> <strong> data/ </strong></summary>
+
+  data/
     tags/
       - [] tag_data.gd
     elements/
@@ -51,8 +50,8 @@ res://
       - [] effect_data.gd
     events/
       - [] event_data.gd (analogue de effect_data.gd car les effets sont aussi des évênements)
-  </details>
-  <details> <summary> <strong> entities/ </strong> </summary>
+
+  entities/
     actor/
       - [] actor_state.gd
       - [] actor_inventory.gd
@@ -66,7 +65,7 @@ res://
     status/
       - [] status_container.gd
       - [] status_instance.gd
-  </details>
+
   systems/
     combat/
       - [] combat_context.gd
