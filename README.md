@@ -173,7 +173,7 @@ On obtient alors par ce raisonnement le pipeline suivant afin de ne pas surcharg
 ```mermaid
 flowchart TD 
 
-ACT["***Action*** 
+ACT["<b>Action</b> 
 déclenche une interaction"] 
 
 EB["<b>EventBus</b> 
