@@ -5,8 +5,8 @@ Un add-on Godot pour constituer un moteur data-driven pour des jeux d'actions et
 
 
 res://
-  addons/
-  autoload/
+ - addons/
+ - autoload/
   - [] game_database.gd
   - [] debug_console.gd
   - [] event_bus.gd
@@ -15,8 +15,8 @@ res://
   - [] conflict_mediator.gd
   - [] save_manager.gd
 
-  core/ 
-    value_objects/
+- core/ 
+  - value_objects/
       - [] conflict_batch.gd
       - [] stat_block.gd
       - [] reaction_context.gd
@@ -27,87 +27,87 @@ res://
       - [] effect_applier.gd
       - [] event_consumer.gd
 
-  data/
-    tags/
+- data/
+  - tags/
       - [] tag_data.gd
-    elements/
+  - elements/
       - [] element_data.gd
-    materials/
+  - materials/
       - [] material_data.gd
-    statuses/
+  - statuses/
       - [] status_data.gd
-    actions/
+  - actions/
       - [] action_data.gd
-    spells/
+  - spells/
       - [] spell_data.gd
-    recipes/
+  - recipes/
       - [] recipe_data.gd
-    rules/
+  - rules/
       - [] rule_data.gd
-    curves/
+  - curves/
       - [] property_profile.gd
-    effects/
+  - effects/
       - [] effect_data.gd
-    events/
+  - events/
       - [] event_data.gd (analogue de effect_data.gd car les effets sont aussi des évênements)
 
-  entities/
-    actor/
+- entities/
+  - actor/
       - [] actor_state.gd
       - [] actor_inventory.gd
       - [] actor_knowledge.gd
-    item/
+  - item/
       - [] item_stack.gd
       - [] item_instance.gd
-    material/
+  - material/
       - [] material_stack.gd
       - [] material_instance.gd
-    status/
+  - status/
       - [] status_container.gd
       - [] status_instance.gd
 
-  systems/
-    combat/
+- systems/
+  - combat/
       - [] combat_context.gd
       - [] damage_resolver.gd
       - [] combat_system.gd (intègre combat_resolver.gd)
-    craft/
+  - craft/
       - [] forge_system.gd
       - [] recipe_resolver.gd
       - [] craft_system.gd (intègre craft_resolver.gd)
-    magic/
+  - magic/
       - [] spell_resolver.gd
       - [] spell_builder.gd
       - [] magic_system.gd (intègre magic_resolver.gd)
-    status/
+  - status/
       - [] status_tick_handler.gd
       - [] status_resolver.gd
       - [] status_system.gd
-    timeline/
+  - timeline/
       - [] event_queue.gd
       - [] scheduled_event.gd
       - [] timeline_system.gd
-    rythm/
+  - rythm/
       - [] rythm_context.gd
       - [] note_resolver.gd
       - [] rythm_system.gd (intègre rythm_resolver.gd)
-  scenes/
-    main/
-    world/
-    combat/
-    ui/
-    debug/
-  ui/
-    widgets/
-    panels/
-    overlays/
-  tools/
-    editors/
-    generators/
-    importers/
-    validators/
-    tests/
-  [x] README.md
+- scenes/
+  - main/
+  - world/
+  - combat/
+  - ui/
+  - debug/
+- ui/
+  - widgets/
+  - panels/
+  - overlays/
+- tools/
+  - editors/
+  - generators/
+  - importers/
+  - validators/
+  - tests/
+- [x] README.md
 
 ## Origine du projet
 
