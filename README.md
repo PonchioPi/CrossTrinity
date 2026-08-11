@@ -115,11 +115,11 @@ res://
   C'est ainsi que le projet a été repensé en partant dans le sens inverse: plutôt que d'intégrer les éléments au moteur au besoin, chercher les besoins auquel fournir des éléments à intégrer au moteur. Cette démarche demande conséquemment un point très particulier: le noyau du moteur DOIT rester inchangé peu importe les besoins futurs. 
 
 ## Objectifs
-  Cette démarche oblige alors à définir les attentes les plus simples que le noyau doit remplir, peu importe la nature de la tâche demandée. C'est pourquoi il a fallu mieux ce qu'étaient les objectifs du projet d'add-on: `action`, `expérimentation`, `combinaison`. 
+  Cette démarche oblige alors à définir les attentes les plus simples que le noyau doit remplir, peu importe la nature de la tâche demandée. C'est pourquoi il a fallu mieux définir ce qu'étaient les objectifs du projet d'add-on: `action`, `expérimentation`, `combinaison`. 
 
 ### Action
 
-  L'action dans un jeu est représentée dans sa forme la plus simple par un `input` ou `évènement d'entrée`. Structurellement parlant, tous les jeux sont des jeux d'action (phrase bateau #9201830…). Mais un jeu d'action est défini par comment l'input produit ce que le joueur voit et ressent comme une action: pour le joueur, une sélection dans un menu n'est pas une action mais bouger son personnage ou interagir avec un objet dans le jeu l'est. De facto, le genre `action` englobe pléthores de catégories différentes: 
+  L'action dans un jeu est représentée dans sa forme la plus simple par un `input` ou `évènement d'entrée`. Structurellement parlant, tous les jeux sont des jeux d'action (phrase bateau #9201830…). Mais un jeu d'action est défini par comment l'input produit ce que le joueur voit et ressent comme une action: pour le joueur, une sélection dans un menu n'est pas une action mais bouger son personnage ou interagir avec un objet en jeu l'est. De facto, le genre `action` englobe pléthores de catégories différentes: 
   + `combat`;
   + `rythme`;
   + `rpg`;
@@ -147,9 +147,63 @@ Cette logique basé sur la combinaison peut s'appliquer aux objets du jeu suivan
 - combos;
 - craft;
 - qte;
-- réactions/interaction;
+- réactions / interactions;
 - synergies;
 - etc.
 
-### Universalité du language
+### Universalité
+  L'add-on dans sa conception présente donc plusieurs contraintes:
+  * noyau de moteur (quasi) immuable;
+  * modèle de système de gestion / résolution unique et déclinable;
+  * input générique compatible avec tous les systèmes sans exception;
+  * possibilité de gestion d'un même input par plusieurs systèmes;
+  * moteur composable;
 
+  C'est pourquoi, afin de pouvoir de répondre à ces contraintes, il a fallu pensé à l'envers. Communément pour une boucle de gameplay, on pense d'abord aux inputs puis on construit le système qui s'adapte le plus approximativement au gameplay voulu. Ici, il fallait d'abord penser au système, réviser sa logique, ses responsabilités; pour ensuite définir la forme que l'input attendu doit prendre pour être consommé. 
+
+Cette logique confirme l'hypothèse de la généricité de l'input, dorénavant nommé 'action' pour ne pas confondre avec l'input système (bouton, joystick, touché tactile, etc). Chaque `input` produit une `action` générique qui peut être consommée par tous les systèmes de gestion / résolveurs. Mais une action seule ne devrait contenir toutes les informations nécessaires à sa consommation. 
+Une action devrait sinon, le cas échéant:
+* contenir ses informations;
+* contenir celles de son propre `contexte`;
+* coupler les actions avec lesquelles elle peut rentrer en `conflit` ou en `interaction`;
+* rapporter les `règles` nécessaires pour résoudre lesdits conflits avec les `résolveurs`;
+* contenir les informations des `évènements` issus de sa consommation par les `systèmes`.
+
+### Pipeline
+
+On obtient alors par ce raisonnement le pipeline suivant:
+```mermaid
+flowchart TD 
+ACT["<b>Action</b><br/>déclenche une interaction<br/>combat / rhythm / craft / sort"] 
+EB["<b>EventBus</b><br/>signaux globaux<br/>combat / rhythm / craft / statuts / sorts"] 
+IE["<b>InteractionEngine</b><br/>autoload / registry<br/>category:channel → resolver"]
+RC["<b>RéactionContext</b><br/>OPEN → GRACE → LOCKED<br/>collecte les inputs temporaires<br/>compile / contextualise les règles<br/>appelle le resolver"] 
+RR["<b>RuleResolver</b><br/>vérifie la compatibilité des règles<br/>avec les tags présents dans le contexte<br/>produit les effets applicables"] 
+CM["<b>ConflictMediator</b><br/>autoload / registry<br/>category:channel → resolver"] 
+CB["<b>ConflictBatch</b><br/>OPEN → GRACE → LOCKED<br/>collecte les inputs temporaires<br/>appelle le resolver"] 
+EA["<b>EffectApplier</b><br/>crée les événements issus des effets"] 
+TS["<b>TimelineSystem</b><br/>heap des événements différés<br/>execute_at / priority"] 
+OUT["<b>Combat / Status / Craft</b><br/>UI / Audio / FX / Stats"] 
+ACT -->|"déclenche"| EB 
+EB -->|"émet / écoute"| IE 
+IE -->|"crée / contextualise"| RC 
+IE -->|"crée / contextualise"| CM 
+RC -->|"résout les règles"| RR 
+RR -->|"effets applicables"| EA 
+CM -->|"crée"| CB 
+CB -->|"résultat"| TS 
+EA -->|"crée / planifie les événements"| TS 
+TS -->|"dispatch"| OUT 
+classDef action fill:#7c3aed,color:#fff,stroke:#a78bfa,stroke-width:3px 
+classDef core fill:#1e293b,color:#fff,stroke:#64748b,stroke-width:2px 
+classDef context fill:#312e81,color:#fff,stroke:#818cf8,stroke-width:2px 
+classDef resolver fill:#14532d,color:#fff,stroke:#4ade80,stroke-width:2px 
+classDef timeline fill:#7c2d12,color:#fff,stroke:#fb923c,stroke-width:2px 
+classDef output fill:#334155,color:#fff,stroke:#94a3b8,stroke-width:2px 
+class ACT action 
+class EB,IE core 
+class RC,CM,CB context 
+class RR,EA resolver
+class TS timeline 
+class OUT output
+```
