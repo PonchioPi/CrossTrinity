@@ -174,44 +174,60 @@ Une action devrait sinon, le cas échéant:
 On obtient alors par ce raisonnement le pipeline suivant:
 ```mermaid
 flowchart TD 
+
 ACT["<b>Action</b> 
 déclenche une interaction
  combat / rhythm / craft / sort"] 
+
 EB["<b>EventBus</b> 
 signaux globaux
  combat / rhythm / craft / statuts / sorts"] 
+
 IE["<b>InteractionEngine</b> 
 autoload / registry
  category:channel → resolver"]
+
 RC["<b>RéactionContext</b> 
 OPEN → GRACE → LOCKED
  collecte les inputs temporaires
  compile / contextualise les règles
  appelle le resolver"] 
+
 RR["<b>RuleResolver</b> 
 vérifie la compatibilité des règles
  avec les tags présents dans le contexte
  produit les effets applicables"] 
+
 CM["<b>ConflictMediator</b> 
 autoload / registry 
 category:channel → resolver"] 
+
 CB["<b>ConflictBatch</b> 
 OPEN → GRACE → LOCKED 
 collecte les inputs temporaires 
 appelle le resolver"] 
+
 EA["<b>EffectApplier</> 
 crée les événements issus des effets"] 
+
 TS["<b>TimelineSystem</b> 
 heap des événements différés 
 execute_at / priority"] 
-OUT["<b>Combat / Status / Craft</b> 
+
+OUT["<b>Systèmes finaux</b>
+Combat / Status / Craft 
 UI / Audio / FX / Stats"] 
+
 ACT -->|"déclenche"| EB 
+
 EB -->|"émet / écoute"| IE 
-IE -->|"crée / contextualise"| RC 
-IE -->|"crée / contextualise"| CM 
-RC -->|"résout les règles"| RR 
-RR -->|"effets applicables"| EA 
+
+IE -->|"crée"| RC 
+
+RC -->|"contextualise"| CM 
+RC -->|"contextualise"| RR 
+RR -->|"compile et résout les règles,
+génère les effets applicables"| EA 
 CM -->|"crée"| CB 
 CB -->|"résultat"| TS 
 EA -->|"crée / planifie les événements"| TS 
