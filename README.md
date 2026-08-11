@@ -174,16 +174,16 @@ Une action devrait sinon, le cas échéant:
 On obtient alors par ce raisonnement le pipeline suivant:
 ```mermaid
 flowchart TD 
-ACT["<b>Action</b><br/>déclenche une interaction<br/>combat / rhythm / craft / sort"] 
-EB["<b>EventBus</b><br/>signaux globaux<br/>combat / rhythm / craft / statuts / sorts"] 
-IE["<b>InteractionEngine</b><br/>autoload / registry<br/>category:channel → resolver"]
-RC["<b>RéactionContext</b><br/>OPEN → GRACE → LOCKED<br/>collecte les inputs temporaires<br/>compile / contextualise les règles<br/>appelle le resolver"] 
-RR["<b>RuleResolver</b><br/>vérifie la compatibilité des règles<br/>avec les tags présents dans le contexte<br/>produit les effets applicables"] 
-CM["<b>ConflictMediator</b><br/>autoload / registry<br/>category:channel → resolver"] 
-CB["<b>ConflictBatch</b><br/>OPEN → GRACE → LOCKED<br/>collecte les inputs temporaires<br/>appelle le resolver"] 
-EA["<b>EffectApplier</b><br/>crée les événements issus des effets"] 
-TS["<b>TimelineSystem</b><br/>heap des événements différés<br/>execute_at / priority"] 
-OUT["<b>Combat / Status / Craft</b><br/>UI / Audio / FX / Stats"] 
+ACT["<b>Action</b> <br/>déclenche une interaction<br/> combat / rhythm / craft / sort"] 
+EB["<b>EventBus</b> <br/>signaux globaux<br/> combat / rhythm / craft / statuts / sorts"] 
+IE["<b>InteractionEngine</b> <br/>autoload / registry<br/> category:channel → resolver"]
+RC["<b>RéactionContext</b> <br/>OPEN → GRACE → LOCKED<br/> collecte les inputs temporaires<br/> compile / contextualise les règles<br/> appelle le resolver"] 
+RR["<b>RuleResolver</b> <br/>vérifie la compatibilité des règles<br/> avec les tags présents dans le contexte<br/> produit les effets applicables"] 
+CM["<b>ConflictMediator</b> <br/>autoload / registry <br/>category:channel → resolver"] 
+CB["<b>ConflictBatch</b> <br/>OPEN → GRACE → LOCKED <br/>collecte les inputs temporaires <br/>appelle le resolver"] 
+EA["<b>EffectApplier</> <br/>crée les événements issus des effets"] 
+TS["<b>TimelineSystem</b> <br/>heap des événements différés <br/>execute_at / priority"] 
+OUT["<b>Combat / Status / Craft</b> <br/>UI / Audio / FX / Stats"] 
 ACT -->|"déclenche"| EB 
 EB -->|"émet / écoute"| IE 
 IE -->|"crée / contextualise"| RC 
