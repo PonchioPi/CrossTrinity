@@ -6,7 +6,7 @@ Un add-on Godot pour constituer un moteur data-driven pour des jeux d'actions et
 
 res://
  - addons/
- - autoload/
+ - <details> <summary> <strong> autoload/ </strong></summary>
       - [ ] game_database.gd
       - [ ] debug_console.gd
       - [ ] event_bus.gd
@@ -14,6 +14,7 @@ res://
       - [ ] interaction_engine.gd
       - [ ] conflict_mediator.gd
       - [ ] save_manager.gd
+ </details>
 - core/
   	- value_objects/
       - [ ] conflict_batch.gd
