@@ -173,34 +173,37 @@ On obtient alors par ce raisonnement le pipeline suivant afin de ne pas surcharg
 ```mermaid
 flowchart TD 
 
-ACT["<b>Action</b> 
-déclenche une interaction
- combat / rhythm / craft / sort"] 
+ACT["***Action*** 
+déclenche une interaction"] 
 
 EB["<b>EventBus</b> 
 signaux globaux
  combat / rhythm / craft / statuts / sorts"] 
 
 IE["<b>InteractionEngine</b> 
-autoload / registry
- category:channel → resolver"]
+compile toutes les règles et les tags
+présents dans la base de données
+concernant l'interaction liée à l'action"]
 
 RC["<b>RéactionContext</b> 
- compile / contextualise les règles
+ compile / contextualise les règles,
+ les tags et les conditions,
  appelle le resolver"] 
 
 RR["<b>RuleResolver</b> 
 vérifie la compatibilité des règles
- avec les tags présents dans le contexte
+ avec les tags présents dans le contexte,
  produit les effets applicables"] 
 
 CM["<b>ConflictMediator</b> 
-autoload / registry 
+analyse le contexte, pour composer un registre de conflit
+associé à une catégorie et un canal de transmission  
 category:channel → resolver"] 
 
-CB["<b>ConflictBatch</b> 
-OPEN → GRACE → LOCKED 
-collecte les inputs temporaires 
+CB["<b>ConflictBatch</b>
+initialise un intervalle de conflit en phases:
+OPEN → GRACE → LOCKED, 
+collecte les inputs temporaires, 
 appelle le resolver"] 
 
 EA["<b>EffectApplier</> 
