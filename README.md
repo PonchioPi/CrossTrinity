@@ -7,26 +7,24 @@ Un add-on Godot pour constituer un moteur data-driven pour des jeux d'actions et
 res://
  - addons/
  - autoload/
-  - [ ] game_database.gd
-  - [ ] debug_console.gd
-  - [ ] event_bus.gd
-  - [ ] timeline.gd
-  - [ ] interaction_engine.gd
-  - [ ] conflict_mediator.gd
-  - [ ] save_manager.gd
-
-- core/ 
-  - value_objects/
+      - [ ] game_database.gd
+      - [ ] debug_console.gd
+      - [ ] event_bus.gd
+      - [ ] timeline.gd
+      - [ ] interaction_engine.gd
+      - [ ] conflict_mediator.gd
+      - [ ] save_manager.gd
+- core/
+  	- value_objects/
       - [ ] conflict_batch.gd
       - [ ] stat_block.gd
       - [ ] reaction_context.gd
       - [ ] tag_registry.gd
-      - [ ] rule_resolver.gd
-      - [ ] tag_query.gd
-      - [ ] event_types.gd
-      - [ ] effect_applier.gd
-      - [ ] event_consumer.gd
-
+    - [ ] rule_resolver.gd
+    - [ ] tag_query.gd
+    - [ ] event_types.gd
+    - [ ] effect_applier.gd
+    - [ ] event_consumer.gd
 - data/
   - tags/
       - [ ] tag_data.gd
