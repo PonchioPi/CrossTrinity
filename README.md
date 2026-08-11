@@ -124,7 +124,9 @@ res://
   + `moba`;
   + etc.
 
-Toutefois, dans ces catégories, il existe des requis simples qui sont attendus d'un moteur: recueillir un `input`, le diriger au bon `canal de diffusion`, consommer l'input diffusé dans le bon `système` et générer un `résultat` selon le système. 
+Toutefois, dans ces catégories, il existe des requis simples qui sont attendus d'un moteur: recueillir un `input`, le diriger au bon `canal de diffusion`, consommer l'input diffusé dans le bon `système` et générer un `résultat` selon le système.
+
+Suivant la catégorie, l'input aura différentes façons d'être consommé. Cependant, il faut ajouter à ceci qu'un input peut, dans certaines catégories, entrer en conflit avec d'autres inputs courants. Dans d'autres, l'input peut aussi interagir avec d'autres inputs pour changer son résultat après traitement et résolution.
 
 ### Expérimentation
 
@@ -155,19 +157,19 @@ Cette logique basé sur la combinaison peut s'appliquer aux objets du jeu suivan
   * possibilité de gestion d'un même input par plusieurs systèmes;
   * moteur composable;
 
-  C'est pourquoi, afin de pouvoir de répondre à ces contraintes, il a fallu pensé à l'envers. Communément pour une boucle de gameplay, on pense d'abord aux inputs puis on construit le système qui s'adapte le plus approximativement au gameplay voulu. Ici, il fallait d'abord penser au système, réviser sa logique, ses responsabilités; pour ensuite définir la forme que l'input attendu doit prendre pour être consommé. 
+  C'est pourquoi, afin de pouvoir de répondre à ces contraintes, il a fallu pensé ***à l'envers***. Communément pour une boucle de gameplay, on pense d'abord aux inputs puis on construit le système qui s'adapte le plus approximativement au gameplay voulu. Ici, il fallait d'abord penser au système, réviser sa logique, ses responsabilités; pour ensuite définir la forme que l'input attendu doit prendre pour être consommé. 
 
 Cette logique confirme l'hypothèse de la généricité de l'input, dorénavant nommé 'action' pour ne pas confondre avec l'input système (bouton, joystick, touché tactile, etc). Chaque `input` produit une `action` générique qui peut être consommée par tous les systèmes de gestion / résolveurs. Mais une action seule ne devrait contenir toutes les informations nécessaires à sa consommation. 
-Une action devrait sinon, le cas échéant:
+Une action devrait, sinon, le cas échéant:
 * contenir ses informations;
 * contenir celles de son propre `contexte`;
 * coupler les actions avec lesquelles elle peut rentrer en `conflit` ou en `interaction`;
 * rapporter les `règles` nécessaires pour résoudre lesdits conflits avec les `résolveurs`;
 * contenir les informations des `évènements` issus de sa consommation par les `systèmes`.
 
-### Pipeline
+## Pipeline
 
-On obtient alors par ce raisonnement le pipeline suivant:
+On obtient alors par ce raisonnement le pipeline suivant afin de ne pas surcharger l'action :
 ```mermaid
 flowchart TD 
 
