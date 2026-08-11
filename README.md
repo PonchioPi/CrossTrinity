@@ -186,8 +186,6 @@ autoload / registry
  category:channel → resolver"]
 
 RC["<b>RéactionContext</b> 
-OPEN → GRACE → LOCKED
- collecte les inputs temporaires
  compile / contextualise les règles
  appelle le resolver"] 
 
