@@ -200,10 +200,10 @@ classDef context fill:#312e81,color:#fff,stroke:#818cf8,stroke-width:2px
 classDef resolver fill:#14532d,color:#fff,stroke:#4ade80,stroke-width:2px 
 classDef timeline fill:#7c2d12,color:#fff,stroke:#fb923c,stroke-width:2px 
 classDef output fill:#334155,color:#fff,stroke:#94a3b8,stroke-width:2px 
-class ACT action 
-class EB,IE core 
-class RC,CM,CB context 
-class RR,EA resolver
-class TS timeline 
-class OUT output
+class ACT action; 
+class EB,IE core; 
+class RC,CM,CB context; 
+class RR,EA resolver;
+class TS timeline;
+class OUT output;
 ```
