@@ -3,7 +3,6 @@ Un add-on Godot pour constituer un moteur data-driven pour des jeux d'actions et
 
 ## Arborescence
 
-
 res://
  - **addons/**
  - **autoload/** 
@@ -13,77 +12,28 @@ res://
       - [ ] `timeline_system.gd`
       - [ ] `interaction_engine.gd`
       - [ ] `conflict_mediator.gd`
-      - [ ] `save_manager.gd`
 
 - **core/**
   	- **value_objects/**
       - [ ] `conflict_batch.gd`
-      - [ ] `stat_block.gd`
       - [ ] `reaction_context.gd`
       - [ ] `tag_registry.gd`
     - [ ] `rule_resolver.gd`
+    - [ ] `conflict_resolver.gd`
     - [ ] `tag_query.gd`
-    - [ ] `event_types.gd`
+    - [ ] `event_heap.gd`
     - [ ] `effect_applier.gd`
     - [ ] `event_consumer.gd`
 - **data/**
-  - **tags/**
-      - [ ] `tag_data.gd`
-  - **elements/**
-      - [ ] `element_data.gd`
-  - **materials/**
-      - [ ] `material_data.gd`
-  - **statuses/**
-      - [ ] `status_data.gd`
-  - **actions/**
-      - [ ] `action_data.gd`
-  - **spells/**
-      - [ ] `spell_data.gd`
-  - **recipes/**
-      - [ ] `recipe_data.gd`
+  - **conflicts/**
+      - [ ] `conflict_profile.gd`
+  - **events/**
+      - [ ] `event_data.gd`
   - **rules/**
       - [ ] `rule_data.gd`
-  - **curves/**
-      - [ ] `property_profile.gd`
-  - **effects/**
-      - [ ] `effect_data.gd`
-  - **events/**
-      - [ ] `event_data.gd` (analogue de effect_data.gd car les effets sont aussi des évènements)
-- **entities/**
-  - **actor/**
-      - [ ] `actor_state.gd`
-      - [ ] `actor_inventory.gd`
-      - [ ] `actor_knowledge.gd`
-  - **item/**
-      - [ ] `item_stack.gd`
-      - [ ] `item_instance.gd`
-  - **material/**
-      - [ ] `material_stack.gd`
-      - [ ] `material_instance.gd`
-  - **status/**
-      - [ ] `status_container.gd`
-      - [ ] `status_instance.gd`
-- **systems/**
-  - **combat/**
-      - [ ] `combat_context.gd`
-      - [ ] `damage_resolver.gd`
-      - [ ] `combat_system.gd` (intègre combat_resolver.gd)
-  - **craft/**
-      - [ ] `forge_system.gd`
-      - [ ] `recipe_resolver.gd`
-      - [ ] `craft_system.gd` (intègre craft_resolver.gd)
-  - **magic/**
-      - [ ] `spell_resolver.gd`
-      - [ ] `spell_builder.gd`
-      - [ ] `magic_system.gd` (intègre magic_resolver.gd)
-  - **status/**
-      - [ ] `status_tick_handler.gd`
-      - [ ] `status_resolver.gd`
-      - [ ] `status_system.gd`
-  - **rythm/**
-      - [ ] `rythm_context.gd`
-      - [ ] `note_resolver.gd`
-      - [ ] `rythm_system.gd` (intègre rythm_resolver.gd)
+  - **tags/**
+      - [ ] `tag_data.gd`
+
 - scenes/
   - main/
   - world/
@@ -122,11 +72,12 @@ res://
   + `fps`;
   + `rts`;
   + `moba`;
+  + `point_and_click`;
   + etc.
 
 Toutefois, dans ces catégories, il existe des requis simples qui sont attendus d'un moteur: recueillir un `input`, le diriger au bon `canal de diffusion`, consommer l'input diffusé dans le bon `système` et générer un `résultat` selon le système.
 
-Suivant la catégorie, l'input aura différentes façons d'être consommé. Cependant, il faut ajouter à ceci qu'un input peut, dans certaines catégories, entrer en conflit avec d'autres inputs courants. Dans d'autres, l'input peut aussi interagir avec d'autres inputs pour changer son résultat après traitement et résolution.
+Suivant la `catégorie`, l'input aura différentes façons d'être consommé. Cependant, il faut ajouter à ceci qu'un input peut, dans certaines catégories, entrer en conflit avec d'autres inputs courants. Dans d'autres, l'input peut aussi interagir avec d'autres inputs pour changer son résultat après traitement et résolution.
 
 ### Expérimentation
 
@@ -136,8 +87,8 @@ L'idée clé à retenir est : plutôt que de brider le noyau du moteur, mieux va
 
 ### Combinaison
 
-  Suivant la philosophie de conception, un moteur peut intégrer plusieurs systèmes différents avec en eux-mêmes des gestions différentes des inputs. Or, pour un noyau de moteur quasi immuable, l'important est l'unicité de la logique la plus basique: tous les systèmes doivent avoir la même logique ou traiter les inputs suivant un même langage. Pour assurer cette contrainte, il faut hypothétiser une anomalie: si tous les systèmes étaient combinés comment faire pour ne pas faire exploser la taille du code. 
-Réponse: Pour chaque fonction du système combiné, chaque système peut avoir une part de code commune avec les autres.
+  Suivant la philosophie de conception, un moteur peut intégrer plusieurs systèmes différents avec en eux-mêmes des gestions différentes des inputs. Or, pour un noyau de moteur quasi immuable, l'important est l'unicité de la logique la plus basique: tous les systèmes doivent avoir la même logique ou traiter les inputs suivant un même langage. Pour assurer cette contrainte, il faut hypothétiser une anomalie, un bug cohérent: si tous les systèmes étaient combinés, comment faire pour ne pas faire exploser la taille du code ? 
+Réponse: pour chaque fonction du système combiné, chaque système peut avoir une part de code commune avec les autres.
 En d'autres termes: en supprimant le plus de spécificité possible, tous les systèmes n'en sont qu'un seul, in fine. Ce qui implique que si deux systèmes ont quasiment les mêmes fonctions, ils peuvent être combinés en un seul.
 
   Cette façon de penser peut aussi s'appliquer aux inputs: plutôt que d'avoir plusieurs types d'inputs différents, autant avoir un input très général qui sera traité plus spécifiquement par le système adéquat.
@@ -159,12 +110,13 @@ Cette logique basé sur la combinaison peut s'appliquer aux objets du jeu suivan
 
   C'est pourquoi, afin de pouvoir de répondre à ces contraintes, il a fallu pensé ***à l'envers***. Communément pour une boucle de gameplay, on pense d'abord aux inputs puis on construit le système qui s'adapte le plus approximativement au gameplay voulu. Ici, il fallait d'abord penser au système, réviser sa logique, ses responsabilités; pour ensuite définir la forme que l'input attendu doit prendre pour être consommé. 
 
-Cette logique confirme l'hypothèse de la généricité de l'input, dorénavant nommé 'action' pour ne pas confondre avec l'input système (bouton, joystick, touché tactile, etc). Chaque `input` produit une `action` générique qui peut être consommée par tous les systèmes de gestion / résolveurs. Mais une action seule ne devrait contenir toutes les informations nécessaires à sa consommation. 
+Cette logique confirme l'hypothèse de la généricité de l'input, dorénavant nommé 'action' pour ne pas confondre avec l'input système (bouton, joystick, touché tactile, etc.). Chaque `input` produit une `action` générique qui peut être consommée par tous les systèmes de gestion / résolveurs. Mais une action seule ne devrait contenir toutes les informations nécessaires à sa consommation. 
 Une action devrait, sinon, le cas échéant:
 * contenir ses informations;
-* contenir celles de son propre `contexte`;
-* coupler les actions avec lesquelles elle peut rentrer en `conflit` ou en `interaction`;
-* rapporter les `règles` nécessaires pour résoudre lesdits conflits avec les `résolveurs`;
+* `médier` et `résoudre` tout `conflit` dépendant d'actions à collecter dans un intervalle donné;
+* contenir les informations de son propre `contexte`;
+* coupler les actions avec lesquelles elle peut rentrer en `interaction`;
+* rapporter les `règles` nécessaires pour résoudre lesdits conflits d'`effets` à appliquer avec les `résolveurs`;
 * contenir les informations des `évènements` issus de sa consommation par les `systèmes`.
 
 ## Pipeline
@@ -204,9 +156,13 @@ CB["<b>ConflictBatch</b>
 initialise un intervalle de conflit en phases:
 OPEN → GRACE → LOCKED, 
 collecte les inputs temporaires, 
-appelle le resolver"] 
+appelle le resolver"]
 
-EA["<b>EffectApplier</> 
+CR["<b>ConflictResolver</b>
+résout le conflit pour générer
+le ou les interactions liés à l'action de base"]
+
+EA["<b>EffectApplier</b> 
 crée les événements issus des effets"] 
 
 TS["<b>TimelineSystem</b> 
@@ -219,27 +175,30 @@ UI / Audio / FX / Stats"]
 
 ACT -->|"déclenche"| EB 
 
-EB -->|"émet / écoute"| IE 
+EB -->|"émet / écoute"| IE
+EB -->|"émet / écoute"| CM
+
+CM -->|"crée"| CB 
+CB -->|"collecte / évalue des actions concurrentes"| CR
+CR -->|"résultat(s)"| IE
 
 IE -->|"crée"| RC 
 
-RC -->|"contextualise"| CM 
 RC -->|"contextualise"| RR 
-RR -->|"compile et résout les règles,
-génère les effets applicables"| EA 
-CM -->|"crée"| CB 
-CB -->|"résultat"| TS 
+RR -->|"compile et résout les conflits de règles à appliquer"| EA 
 EA -->|"crée / planifie les événements"| TS 
 TS -->|"dispatch"| OUT 
 classDef action fill:#7c3aed,color:#fff,stroke:#a78bfa,stroke-width:3px 
-classDef core fill:#1e293b,color:#fff,stroke:#64748b,stroke-width:2px 
+classDef core fill:#1e293b,color:#fff,stroke:#64748b,stroke-width:2px
+classDef conflict fill:#777777,color:#fff,stroke:#ffffff,stroke-width:3px
 classDef context fill:#312e81,color:#fff,stroke:#818cf8,stroke-width:2px 
 classDef resolver fill:#14532d,color:#fff,stroke:#4ade80,stroke-width:2px 
 classDef timeline fill:#7c2d12,color:#fff,stroke:#fb923c,stroke-width:2px 
 classDef output fill:#334155,color:#fff,stroke:#94a3b8,stroke-width:2px 
 class ACT action; 
-class EB,IE core; 
-class RC,CM,CB context; 
+class EB,IE core;
+class CM,CB,CR conflict;
+class RC context; 
 class RR,EA resolver;
 class TS timeline;
 class OUT output;
