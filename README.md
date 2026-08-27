@@ -215,7 +215,7 @@ Rôle :
 
 ### ConflictMediator
 
-Autoload orchestrateur des conflits.
+Autoload, Orchestrateur des conflits.
 
 Rôle :
 - Créer et actualiser les batches suivant les signaux différés.
@@ -234,7 +234,7 @@ Rôle :
 
 ### ConflictProfile
 
-Object initial de décision.
+Resource, Object initial de décision.
 
 Rôle :
 - Fixer les durées de phase `OPEN` et `GRACE` du batch,
@@ -245,9 +245,9 @@ Rôle :
 Objet temporaire de décision.
 
 Rôle :
-- Evaluer les inputs pour chaque cible de batch selon l'appréciation du système 'category:channel',
+- Evaluer les inputs pour chaque cible de batch selon l'appréciation du système `category:channel`,
 - Sélectionner les meilleurs inputs retenus pour chaque cible,
-- Générer un résultat pour chaque cible selon l'appréciation du système 'category:channel',
+- Générer un résultat pour chaque cible selon l'appréciation du système `category:channel`,
 - Produire le résultat final du batch.
 
 ### InteractionEngine
@@ -263,26 +263,58 @@ Rôle :
 Objet temporaire de décision.
 
 Rôle :
-- Compiler les règles associées aux tags transmis,
-- Sélectionner les règles applicables,
-- Produire un registre de règles applicables.
+- Compiler les tags et ids suivant la source, la cible et l'environnement de l'action,
+- Compiler les valeurs à évaluer selon l'interaction,
 
 ### RuleResolver
 
 Objet temporaire de décision.
 
 Rôle :
-- Compiler les règles associées aux tags transmis,
+- Compiler les règles associées aux tags et idées transmis par le contexte,
 - Sélectionner les règles applicables,
 - Produire un registre de règles applicables.
 
-### TimelineSystem
+### RuleData
 
-File d’exécution des événements.
+Ressource de décision.
 
 Rôle :
-- Stocker les événements déjà résolus.
-- Les trier par `execute_at`.
+- Compiler les tags, ids sélectionnés pouvant valider ou non son application dans un contexte,
+- Rassembler des effets et leurs conditions à remplir.
+
+### EffectApplier
+
+Objet temporaire de décision.
+
+Rôle :
+- Appliquer les règles sélectionnées au contexte,
+- Générer des évènements à programmer à partir des applications.
+
+### EventData
+
+Ressource d'évènements.
+
+Rôle :
+- Compiler les données de l'effet et ses tags et ses ids associés,
+- Garde ses temps de mis en file d'attente, d'exécution, son type. 
+
+### TimelineSystem
+
+Autoload, File d’exécution des événements.
+
+Rôle :
+- Stocker les événements déjà résolus,
+- Les trier par `execute_at`,
 - Les distribuer aux consommateurs.
 
-Avec cette architecture, seuls les `résolveurs de conflits` et les `systèmes finaux` sont à décliner suivant leurs classes de base pour implémenter les types d'évènements souhaités. Ces derniers doivent être renseignés au préalable dans les types de l'`EventData`. 
+### EventConsumer
+
+Objet de d'exécution.
+
+Rôle:
+- Consommer les évènements du (des) type(s) qu'il gère,
+- Gérer et appliquer les évènements déployés.
+
+Avec cette architecture, seuls les `résolveurs de conflits` et les systèmes finaux ou `consommateur d'évènement` sont à décliner suivant leurs classes de base pour implémenter les types d'évènements souhaités. Ces derniers doivent être renseignés au préalable dans les types de l'`EventData`. 
+Les tags et les ids servent ici des contextualisateurs globaux pour les tags (contenant leurs propres relations entre eux) et locaux pour les id.
