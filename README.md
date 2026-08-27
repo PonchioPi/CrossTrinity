@@ -8,31 +8,31 @@ res://
  - **autoload/** 
       - [ ] `game_database.gd`
       - [ ] `debug_console.gd`
-      - [ ] `event_bus.gd`
-      - [ ] `timeline_system.gd`
+      - [x] `event_bus.gd`
+      - [x] `timeline_system.gd`
       - [ ] `interaction_engine.gd`
-      - [ ] `conflict_mediator.gd`
+      - [x] `conflict_mediator.gd`
 
 - **core/**
   	- **value_objects/**
-      - [ ] `conflict_batch.gd`
-      - [ ] `reaction_context.gd`
-      - [ ] `tag_registry.gd`
-    - [ ] `rule_resolver.gd`
-    - [ ] `conflict_resolver.gd`
+      - [x] `conflict_batch.gd`
+      - [x] `reaction_context.gd`
+      - [x] `tag_registry.gd`
+    - [x] `rule_resolver.gd`
+    - [x] `conflict_resolver.gd`
     - [ ] `tag_query.gd`
-    - [ ] `event_heap.gd`
-    - [ ] `effect_applier.gd`
-    - [ ] `event_consumer.gd`
+    - [x] `event_heap.gd`
+    - [x] `effect_applier.gd`
+    - [x] `event_consumer.gd`
 - **data/**
   - **conflicts/**
-      - [ ] `conflict_profile.gd`
+      - [x] `conflict_profile.gd`
   - **events/**
-      - [ ] `event_data.gd`
+      - [x] `event_data.gd`
   - **rules/**
-      - [ ] `rule_data.gd`
+      - [x] `rule_data.gd`
   - **tags/**
-      - [ ] `tag_data.gd`
+      - [x] `tag_data.gd`
 
 - scenes/
   - main/
