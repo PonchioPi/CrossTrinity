@@ -170,8 +170,8 @@ UI / Audio / FX / Stats"]
 
 ACT -->|"déclenche"| EB 
 
-EB -->|"émet / écoute"| IE
-EB -->|"émet / écoute"| CM
+EB -->|"émet / écoute directement"| IE
+EB -->|"émet / écoute en différé"| CM
 
 CM -->|"crée"| CB 
 CB -->|"collecte / évalue des actions concurrentes"| CR
@@ -198,3 +198,91 @@ class RR,EA resolver;
 class TS timeline;
 class OUT output;
 ```
+ Ce pipeline a pour avantage de pouvoir gérer deux types d'action généraux: celui des actions dont les effets doivent être directs et celui de celles dont les effets dépendent d'actions réponses à collecter temporairement et doivent par conséquent être différés. Cette séparation permet à ces actions d'être traitées de manière équivoque par le reste du pipeline à partir de l'InteractionEngine et décomplexifie l'architecture nécessaire au moteur pour gérer la majorité des catégories d'action.  
+
+## Architecture
+
+### EventBus
+
+Autoload de signaux globaux.
+
+Rôle :
+- Centraliser les signaux transversaux,
+- Éviter le couplage direct entre nodes éloignés,
+- Emettre des signaux directs,
+- Emettre des requête de signaux différés,
+- Rester sans logique métier.
+
+### ConflictMediator
+
+Autoload orchestrateur des conflits.
+
+Rôle :
+- Créer et actualiser les batches suivant les signaux différés.
+- Choisir et attribuer au batch son resolver selon `category:channel`.
+- Transmettre le résultat final à l'InteractionEngine.
+
+### ConflictBatch
+
+Objet temporaire de décision.
+
+Rôle :
+- Recevoir les inputs pendant une fenêtre courte,
+- Evaluer les inputs et les classer par cible,
+- Passer par les phases `OPEN`, `GRACE`, `LOCKED`;
+- Produire un résultat via un resolver.
+
+### ConflictProfile
+
+Object initial de décision.
+
+Rôle :
+- Fixer les durées de phase `OPEN` et `GRACE` du batch,
+- Fixer les seuils d'évaluation d'action réponse du batch selon la durée de phase `OPEN`.
+
+### ConflictResolver
+
+Objet temporaire de décision.
+
+Rôle :
+- Evaluer les inputs pour chaque cible de batch selon l'appréciation du système 'category:channel',
+- Sélectionner les meilleurs inputs retenus pour chaque cible,
+- Générer un résultat pour chaque cible selon l'appréciation du système 'category:channel',
+- Produire le résultat final du batch.
+
+### InteractionEngine
+
+Autoload de logique transversale.
+
+Rôle :
+- Recueillir les tags et ids assignés aux signaux reçus,
+- Génèrer un contexte de réaction composé des tags, valeurs et ids collectés.
+
+### ReactionContext
+
+Objet temporaire de décision.
+
+Rôle :
+- Compiler les règles associées aux tags transmis,
+- Sélectionner les règles applicables,
+- Produire un registre de règles applicables.
+
+### RuleResolver
+
+Objet temporaire de décision.
+
+Rôle :
+- Compiler les règles associées aux tags transmis,
+- Sélectionner les règles applicables,
+- Produire un registre de règles applicables.
+
+### TimelineSystem
+
+File d’exécution des événements.
+
+Rôle :
+- Stocker les événements déjà résolus.
+- Les trier par `execute_at`.
+- Les distribuer aux consommateurs.
+
+Avec cette architecture, seuls les `résolveurs de conflits` et les `systèmes finaux` sont à décliner suivant leurs classes de base pour implémenter les types d'évènements souhaités. Ces derniers doivent être renseignés au préalable dans les types de l'`EventData`. 
