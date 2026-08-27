@@ -36,8 +36,6 @@ res://
 
 - scenes/
   - main/
-  - world/
-  - combat/
   - ui/
   - debug/
 - ui/
@@ -129,32 +127,29 @@ ACT["<b>Action</b>
 déclenche une interaction"] 
 
 EB["<b>EventBus</b> 
-signaux globaux
- combat / rhythm / craft / statuts / sorts"] 
+signaux globaux"] 
 
 IE["<b>InteractionEngine</b> 
-compile toutes les règles et les tags
+compile tous les tags
 présents dans la base de données
 concernant l'interaction liée à l'action"]
 
 RC["<b>RéactionContext</b> 
- compile / contextualise les règles,
- les tags et les conditions,
- appelle le resolver"] 
+compile / contextualise
+les tags, id et valeurs à évaluer pour l'interaction"] 
 
 RR["<b>RuleResolver</b> 
 vérifie la compatibilité des règles
- avec les tags présents dans le contexte,
- produit les effets applicables"] 
+avec les tags, ids et valeurs présents dans le contexte"] 
 
 CM["<b>ConflictMediator</b> 
-analyse le contexte, pour composer un registre de conflit
-associé à une catégorie et un canal de transmission  
+crée, stocke et actualise les batchs,
+les associe à une catégorie et un canal de transmission  
 category:channel → resolver"] 
 
 CB["<b>ConflictBatch</b>
 initialise un intervalle de conflit en phases:
-OPEN → GRACE → LOCKED, 
+OPEN → GRACE → LOCKED → RESOLVED, 
 collecte les inputs temporaires, 
 appelle le resolver"]
 
@@ -163,11 +158,11 @@ résout le conflit pour générer
 le ou les interactions liés à l'action de base"]
 
 EA["<b>EffectApplier</b> 
-crée les événements issus des effets"] 
+crée les événements issus des règles applicables"] 
 
 TS["<b>TimelineSystem</b> 
-heap des événements différés 
-execute_at / priority"] 
+file des événements différés 
+execute_at / priority / sequence "] 
 
 OUT["<b>Systèmes finaux</b>
 Combat / Status / Craft 
