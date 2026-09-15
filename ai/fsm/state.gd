@@ -71,6 +71,8 @@ func exit(actor:Node) -> void:
 func finish(next_state:String) -> void:
     finished.emit(next_state)
 
+#endregion
+
 ## If there's a need to reset a RefTimer.
 static func reset_timer(timer: RefTimer, wait_time:float) -> void:
     timer.set_wait_time(wait_time)
