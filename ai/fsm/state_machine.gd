@@ -119,4 +119,16 @@ func _transition_to(target_state_name:String) -> void:
         return
     previous_state = _state
 
-    
+    if target_state_name in secondary_states_map:
+        states_stack.push_back(target_state_name)
+    if not target_state_name in states.keys():
+        if target_state_name == 'previous':
+            target_state_name = states_stack[-2]
+            states_stack.remove_at(-1)
+        else:
+            return
+    _state.exit(actor)
+    states_stack[-1] = target_state_name
+    _state = states.get(target_state_name)
+    emit_signal("transitioned", states_stack[-1])
+    _state.enter(actor)
