@@ -76,4 +76,5 @@ func tick(_delta:float) -> void:
         blackboard._set_("status, 0b110, cache_key)
         var status: int = self.root._tick(actor, blackboard)
         blackboard._set_("status", status, cache_key)
-        
+
+#endregion
