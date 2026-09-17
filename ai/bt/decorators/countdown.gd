@@ -1,4 +1,4 @@
-class_name BTCooldown
+class_name BTCountdown
 extends BTDecorator
 
 @export_range(0.0, 3600, 0.001, "or_greater") var countdown:float
@@ -11,9 +11,9 @@ func tick(actor:Node, blackboard:Blackboard) -> void:
     if time_limit > 0.0:
         time_limit -= tree.get_delta()
         blackboard._set_("remaining_time", time_limit, cache_key)
-        status = branches[0]._tick(actor, blackboard)
+        super.tick(actor, blackboard)
     else:
-        status = 0b100
+        status = ((status & (~0b11)) | 0b100)
     return
 
 func reset(blackboard:BlackBoard) -> void:
