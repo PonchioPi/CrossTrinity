@@ -14,4 +14,4 @@ func set_branches(value:Array[BTTask]) -> void:
     branches_changed.emit(self.get_instance_id(), branches)
 
 func tick(actor:Node, blackboard:Blackboard) -> void:
-    status = ((status & 0b100) | branches[0]._tick(actor, blackboard))
+    status = ((status & (~0b11)) | branches[0]._tick(actor, blackboard))
