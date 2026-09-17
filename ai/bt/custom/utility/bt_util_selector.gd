@@ -36,7 +36,7 @@ func choose_best_scores(array: PackedFloat32Array) -> Array[float]:
 
 func tick(actor:Node, blackboard:BlackBoard) -> void:
     blackboard._set_("next_action", evaluate_actions(), cache_key)
-    status = current_branch._tick(actor, blackboard)
+    status = ((status & (~0b11)) | current_branch._tick(actor, blackboard))
     if is_standby():
         blackboard._set_("previous_action", current_branch, cache_key)
         var new_branch:BTUtilSocket = blackboard._get_("next_action", branches[0], cache_key)
