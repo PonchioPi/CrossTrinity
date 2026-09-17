@@ -10,5 +10,8 @@ func set_branches(value:Array) -> void:
     branches[0].set_tree(tree)
     branches_changed.emit(self.get_instance_id(), branches)
 
+func tick(actor:Node, blackboard:BlackBoard) -> void:
+    status = ((status & (~0b11)) | branches[0]._tick(actor, blackboard))
+
 func reset(blackboard:BlackBoard) -> void:
     pass
