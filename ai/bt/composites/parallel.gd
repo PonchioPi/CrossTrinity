@@ -12,7 +12,7 @@ func set_policy(value:bool) -> void:
     status = ((int(value) << 4) | status & 0b1111)
 
 func is_selector() -> bool:
-    return (status >> 4) == 1
+    return (status & 0b10000) >> 4 == 1
 
 func _init() -> void:
     cache_key = "Parallel#%s"%[self.get_instance_id()]
