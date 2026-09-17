@@ -9,7 +9,7 @@ func _init() -> void:
 func tick(actor:Node, blackboard:BlackBoard) -> void:
     var count:int = blackboard._get_("count", 0, cache_key)
     if count < count_limit:
-        status = branches[0]._tick(actor, blackboard)
+        status = ((status & (~0b11)) | branches[0]._tick(actor, blackboard))
         if is_standby():
             blackboard._set_("count", count + 1, cache_key)
         return
