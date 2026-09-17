@@ -15,7 +15,7 @@ func tick(actor:Node, blackboard:BlackBoard) -> void:
         for index in random_children.size():
             if index < last_try:
                 continue
-            status = random_children[index]._tick(actor, blackboard)
+            status = (status & (~0b11)) | random_children[index]._tick(actor, blackboard)
             blackboard._set_("status", status, cache_key)
             if (status & 0b11) == 1:
                 random_children = null
@@ -27,7 +27,7 @@ func tick(actor:Node, blackboard:BlackBoard) -> void:
                 last_try += 1
         if last_try >= branches.size():
             last_try = 0
-            status = 0b100
+            status = (status & (~0b11)) | 0b100
             return
         _reset()
         return
@@ -35,7 +35,7 @@ func tick(actor:Node, blackboard:BlackBoard) -> void:
         for index in branches.size():
             if index < last_try:
                 continue
-            status = branches[index]._tick(actor, blackboard)
+            status = (status & (~0b11)) | branches[index]._tick(actor, blackboard)
             blackboard._set_("status", status, cache_key)
             if (status & 0b11) == 1:
                 last_try = 0
@@ -46,9 +46,9 @@ func tick(actor:Node, blackboard:BlackBoard) -> void:
                 last_try += 1
         if last_try >= branches.size():
             last_try = 0
-            status = 0b100
+            status = (status & (~0b11)) | 0b100
             return
         _reset()
         return
-    status = 0b100
+    status =  (status & (~0b11)) | 0b100
     return
