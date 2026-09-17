@@ -38,7 +38,7 @@ func set_tree(value: Object) -> void:
 #region Getters
 
 func is_enabled() -> bool:
-    return status >> 2 == 1
+    return (status & 0b100) >> 2 == 1
 
 func is_standby() -> bool:
     return ((status & 0b10) >> 1) ^ 0b1 == 0
