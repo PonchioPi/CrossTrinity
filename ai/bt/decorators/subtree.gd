@@ -41,4 +41,4 @@ func init_tree(tree_node:Object) -> void:
     behavior_subtree_changed.emit()
 
 func tick(actor:Node, blackboard:BlackBoard) -> void:
-    status = branches[0]._tick(actor, blackboard)
+    status = ((status & (~0b11)) | branches[0]._tick(actor, blackboard))
