@@ -13,7 +13,7 @@ func tick(actor:Node, blackboard:BlackBoard) -> void:
         blackboard._set_("remaining_time", remaining, cache_key)
         status = 0b110
     else:
-        status = branches[0]._tick(actor, blackboard)
+        status = ((status & (~0b11)) | branches[0]._tick(actor, blackboard))
         if is_standby():
             blackboard.erase("remaining_time", cache_key)
     return
