@@ -27,7 +27,7 @@ func tick(actor:Node, blackboard:BlackBoard) -> void:
                 last_success += 1
         if last_success >= branches.size():
             last_success = 0
-            status = 0b101
+            status = (status & (~0b11)) | 0b101
             return
         _reset()
         return
@@ -46,9 +46,9 @@ func tick(actor:Node, blackboard:BlackBoard) -> void:
                 last_success += 1
         if last_success >= branches.size():
             last_success = 0
-            status = 0b101
+            status = (status & (~0b11)) | 0b101
             return
         _reset()
         return
-    status = 0b100
+    status = (status & (~0b11)) | 0b100
     return
