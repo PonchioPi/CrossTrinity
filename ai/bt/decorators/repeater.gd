@@ -8,7 +8,7 @@ func _init() -> void:
 
 func tick(actor:Node, blackboard:BlackBoard) -> void:
     var count:int = blackboard._get_("count", 0, cache_key)
-    status = ((status & (~0b11)) | branches[0]._tick(actor, blackboard))
+    super.tick(actor, blackboard)
     if (status & 0b11) == 1:
         blackboard._set_("count", count + 1, cache_key)
         count = blackboard._get_("count", cache_key)
