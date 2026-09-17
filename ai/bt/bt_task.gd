@@ -18,7 +18,7 @@ var rank: int = 0
 #region Setters
 
 func set_enabled(value:bool) -> void:
-    status = (int(value) << 2) | (status & 0b11)
+    status = (int(value) << 2) | (status & (~0b100))
     if !is_enabled:
         _reset()
     enabled.emit(is_enabled())
