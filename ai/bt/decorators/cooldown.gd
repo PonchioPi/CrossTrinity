@@ -11,9 +11,9 @@ func tick(actor:Node, blackboard:BlackBoard) -> void:
     if remaining > 0.0:
         remaining -= tree.get_delta()
         blackboard._set_("remaining_time", remaining, cache_key)
-        status = 0b100
+        status = ((status & (~0b11)) | 0b100)
     else:
-        status = branches[0]._tick(actor, blackboard)
+        super.tick(actor, blackboard)
         if not is_standby():
             blackboard.erase("remaining_time", cache_key)
     return
