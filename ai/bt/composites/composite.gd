@@ -21,4 +21,4 @@ func set_random(value:bool) -> void:
     status = (int(value) << 3 | (status & 0b111))
 
 func is_random() -> bool:
-    return status >> 3 == 1
+    return (status & 0b1000) >> 3 == 1
