@@ -57,7 +57,7 @@ func product(array: Array) -> float:
     return result
 
 func tick(actor:Node, blackboard:BlackBoard) -> void:
-    status = branches[0]._tick(actor, blackboard)
+    status = ((status & (~0b11)) | branches[0]._tick(actor, blackboard))
 
 func _init() -> void:
     cache_key = "UtilitySocket#%s"%[self.get_instance_id()]
