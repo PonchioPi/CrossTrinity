@@ -69,7 +69,7 @@ func _tick(actor:Node, blackboard:Blackboard) -> int:
         tick(actor, blackboard)
         blackboard._set_("status", status, cache_key)
         return status
-    return 0
+    return (status & (~0b11)) | 0
 
 func tick(actor:Node, blackboard:BlackBoard) -> void:
     pass
