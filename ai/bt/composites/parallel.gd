@@ -33,7 +33,7 @@ func tick(actor:Node, blackboard:BlackBoard) -> void:
     if is_random():
         child_order.shuffle()
     for index in branches.size():
-        status = child_order[index]._tick(actor, blackboard)
+        status = (status & (~0b11)) | child_order[index]._tick(actor, blackboard)
         results[index] = status
         blackboard._set_("status", status, cache_key)
         if (status & 0b11) == 1:
@@ -45,11 +45,11 @@ func tick(actor:Node, blackboard:BlackBoard) -> void:
             if not is_selector():
                 return
     if 0b110 in results or 0b111 in results:
-        status = 0b110
+        status = (status & (~0b11)) | 0b110
         return
     if not is_selector():
-        status = 0b101
+        status = (status & (~0b11)) | 0b101
         return
     else:
-        status = 0b100
+        status = (status & (~0b11)) | 0b100
         return
