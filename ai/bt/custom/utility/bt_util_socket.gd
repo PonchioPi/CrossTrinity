@@ -54,6 +54,8 @@ func product(array: Array) -> float:
     var result:= 1.0
     for value in array:
         result *= value
+        if not result:
+            break
     return result
 
 func tick(actor:Node, blackboard:BlackBoard) -> void:
