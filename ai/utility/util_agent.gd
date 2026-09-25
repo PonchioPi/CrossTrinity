@@ -93,7 +93,7 @@ func evaluate_actions() -> UtilityAction:
 func choose_best_scores(array: PackedFloat32Array) -> Array[float]:
     array.sort()
     var limit := array.size() >> 1
-    var new_array := Array(array.slice(0, limit))
+    var new_array := Array(array.slice(limit))
     return new_array
 
 func transition_to() -> void:
