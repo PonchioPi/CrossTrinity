@@ -68,11 +68,8 @@ func _swap(i:int, j:int) -> void:
 
 func peek_until(dead_line:float) -> Array[EventData]:
 	var queue: Array[EventData] = []
-	var copy:= EventHeap.new()
-	copy._data = _data.duplicate()
-	while not copy.is_empty():
-		var event := copy.peek()
+	for event in _data:
 		if event.execute_at > dead_line:
 			break
-		queue.append(copy.pop())
+		queue.append(event)
 	return queue
