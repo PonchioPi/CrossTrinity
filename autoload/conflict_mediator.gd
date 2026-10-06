@@ -1,3 +1,4 @@
+@tool
 extends Node
 
 signal batch_created(batch_id: String)
@@ -15,7 +16,7 @@ var resolver_registry: Dictionary[String, Callable]
 var _timer: Timer
 
 # Called when the node enters the scene tree for the first time.
-func _ready() -> void:
+func _enter_tree() -> void:
 	if auto_process:
 		_timer = Timer.new()
 		_timer.one_shot = false
@@ -23,6 +24,12 @@ func _ready() -> void:
 		_timer.autostart = true
 		add_child(_timer)
 		_timer.timeout.connect(_on_tick)
+	if EventBus:
+		EventBus.indirect_input_received.connect(_on_input_received)
+
+func _exit_tree() -> void:
+	if EventBus:
+		EventBus.indirect_input_received.disconnect(_on_input_received)
 
 func _process(delta: float) -> void:
 	if not auto_process:
@@ -66,19 +73,18 @@ func create_batch(
 	var resolver := _get_resolver(category, channel)
 	var batch := ConflictBatch.new()
 	var batch_id := _make_batch_id(category, channel, source_id, t)
-	var thresholds := profile.thresholds
 	batch.setup(
 		batch_id,
+		source_event,
 		category,
 		channel,
 		source_id,
 		target_ids,
-		source_event,
 		t,
 		real_open,
 		real_grace,
 		resolver,
-		thresholds
+		profile
 		)
 	_connect_batch_signals(batch)
 	active_batches[batch_id] = batch
@@ -102,11 +108,11 @@ func process(now: float) -> void:
 		if batch.phase == ConflictBatch.BatchPhase.RESOLVED:
 			if batch.result == null:
 				resolver_missing.emit(batch.category, batch.channel, batch.batch_id)
-				#if EventBus:
-				#	EventBus.conflict_resolver_missing.emit(batch.category, batch.channel, batch.batch_id)
+				if EventBus:
+					EventBus.conflict_resolver_missing.emit(batch.category, batch.channel, batch.batch_id)
 			batch_resolved.emit(batch.batch_id, batch.result)
-			#if EventBus:
-			#	EventBus.conflict_batch_resolved.emit(batch.batch_id, batch.category, batch.channel, batch.result)
+			if EventBus:
+				EventBus.conflict_batch_resolved.emit(batch.batch_id, batch.category, batch.channel, batch.result)
 			to_remove.append(batch_id)
 	for batch_id in to_remove:
 		active_batches.erase(batch_id)
@@ -119,8 +125,8 @@ func force_resolve(batch_id: String, now: float = -1.0) -> Variant:
 	var batch := active_batches[batch_id]
 	var result : Variant = batch.lock_and_resolve(t)
 	batch_resolved.emit(batch.batch_id, result)
-	#if EventBus:
-	#	EventBus.conflict_batch_resolved.emit(batch.batch_id, batch.category, batch.channel, result)
+	if EventBus:
+		EventBus.conflict_batch_resolved.emit(batch.batch_id, batch.category, batch.channel, result)
 	active_batches.erase(batch_id)
 	batch_removed.emit(batch_id)
 	return result
@@ -147,6 +153,36 @@ func _connect_batch_signals(batch: ConflictBatch) -> void:
 	if not batch.batch_resolved.is_connected(_on_batch_resolved):
 		batch.batch_resolved.connect(_on_batch_resolved)
 
+func _on_input_received(input: Dictionary) -> void:
+	var category :String = input.get("category", "default")
+	var channel :String = input.get("channel", "default")
+	var source_id :String = input.get("source_id", "default")
+	var target_ids :PackedStringArray = input.get("target_ids", [])
+	var selection_mode: GameDatabase.ProfileSelectionMode = input.get(
+		"profile_selection_mode", GameDatabase.ProfileSelectionMode.DEFAULT)
+	if source_id == "default" or not target_ids:
+		return
+	var t: float = current_time + (_timer.wait_time - _timer.get_time_left())
+	var batch_key: String = _make_batch_id(
+		category,
+		channel,
+		source_id
+	)
+	if has_batch(batch_key):
+		var batch := get_batch(batch_key)
+		if batch.phase == ConflictBatch.BatchPhase.RESOLVED\
+		or t > batch.grace_until:
+			active_batches.erase(batch_key)
+		else:
+			batch.add_input(input, t)
+			return
+	@warning_ignore("unused_variable")
+	var new_batch := create_batch(
+		category, channel, source_id,
+		target_ids, input, t,
+		GameDatabase.get_conflict_profile(category, channel, selection_mode)
+	)
+
 func _on_batch_opened(batch_id: String) -> void:
 	#EventBus.conflict_batch_created.emit(batch_id)
 	pass
@@ -156,11 +192,12 @@ func _on_batch_locked(batch_id: String) -> void:
 	pass
 
 func _on_batch_resolved(batch_id: String, result: Variant) -> void:
-	#EventBus.conflict_batch_resolved.emit(batch_id, result)
-	pass
+	var batch : ConflictBatch = get_batch(batch_id)
+	if EventBus:
+		EventBus.conflict_batch_resolved.emit(batch_id, result)
 
 func _make_registry_key(category: String, channel: String) -> String:
 	return "%s:%s" % [category, channel]
 
-func _make_batch_id(category: String, channel: String, source_id: String, now: float) -> String:
-	return "%s:%s:%s:%s" % [category, channel, source_id, str(now)]
+func _make_batch_id(category: String, channel: String, source_id: String) -> String:
+	return "%s:%s:%s" % [category, channel, source_id]
