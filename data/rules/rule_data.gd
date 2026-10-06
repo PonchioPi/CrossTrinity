@@ -1,3 +1,4 @@
+@tool
 extends Resource
 class_name RuleData
 
@@ -133,13 +134,13 @@ func _check_compact_condition(t:int, key:String, value:Variant, context: Reactio
 		ConditionType.HAS_TAG:
 			return context.has_tag(key)
 		ConditionType.HAS_ALL_TAGS:
-			return context.has_all_tags(value as PackedStringArray)
+			return context_has_all_tags(context)
 		ConditionType.HAS_ANY_TAG:
 			return context.has_any_tag(value as PackedStringArray)
 		ConditionType.HAS_ID:
 			return context.has_id(key)
 		ConditionType.HAS_ALL_IDS:
-			return context.has_all_ids(value as PackedStringArray)
+			return context_has_all_ids(context)
 		ConditionType.HAS_ANY_ID:
 			return context.has_any_id(value as PackedStringArray)
 		ConditionType.F_MIN_VALUE:
@@ -162,3 +163,41 @@ func _check_compact_condition(t:int, key:String, value:Variant, context: Reactio
 			return context.get_any_value(key) in (value as Array)
 		_:
 			return true
+
+func context_has_all_tags(context: ReactionContext) -> bool:
+	return context.has_all_tags(required_tags) \
+	and context.has_all_tags(required_source_tags)\
+	and context.has_all_tags(required_target_tags)\
+	and context.has_all_tags(required_environment_tags)
+
+func context_has_all_ids(context: ReactionContext) -> bool:
+	return context.has_all_ids(required_tags) \
+	and context.has_all_ids(required_source_tags)\
+	and context.has_all_ids(required_target_tags)\
+	and context.has_all_ids(required_environment_tags)
+
+func get_required_tags() -> PackedStringArray:
+	var tags := required_tags.duplicate()
+	tags.append_array(required_source_tags)
+	tags.append_array(required_target_tags)
+	tags.append_array(required_environment_tags)
+	return tags
+
+func get_required_ids() -> PackedStringArray:
+	var ids := required_ids.duplicate()
+	ids.append_array(required_source_ids)
+	ids.append_array(required_target_ids)
+	ids.append_array(required_environment_ids)
+	return ids
+
+func has_no_required_tag() -> bool:
+	return required_tags.is_empty()\
+	and required_source_tags.is_empty()\
+	and required_target_tags.is_empty()\
+	and required_environment_tags.is_empty()
+
+func has_no_required_id() -> bool:
+	return required_ids.is_empty()\
+	and required_source_ids.is_empty()\
+	and required_target_ids.is_empty()\
+	and required_environment_ids.is_empty()
