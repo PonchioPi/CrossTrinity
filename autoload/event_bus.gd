@@ -5,6 +5,8 @@ signal timeline_event_dispatched(system_name: String, event_data: EventData)
 signal event_published(system_name: String, payload: Dictionary)
 signal timeline_emptied
 
+signal conflict_batch_created(batch_id: String)
+
 signal conflict_batch_resolved(
 	batch_id: String, category: String,
 	channel: String, result: Variant)
@@ -15,3 +17,4 @@ signal conflict_resolver_missing(
 
 signal input_received(input: Dictionary)
 signal inputs_received(inputs: Array[Dictionary])
+signal indirect_input_received(input: Dictionary)
