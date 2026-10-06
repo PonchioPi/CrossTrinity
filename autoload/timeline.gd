@@ -1,3 +1,4 @@
+@tool
 extends Node
 
 signal timeline_event(event: EventData)
@@ -18,7 +19,7 @@ var _timer: Timer
 var _sequence_counter: int = 0
 
 # Called when the node enters the scene tree for the first time.
-func _ready() -> void:
+func _enter_tree() -> void:
 	_timer = Timer.new()
 	_timer.one_shot = false
 	_timer.wait_time = tick_interval
@@ -29,6 +30,8 @@ func _ready() -> void:
 		for consumer_script in CONSUMERS:
 			var consumer: GDScript = load(consumer_script)
 			_consumers.append(consumer)
+			if Engine.is_editor_hint():
+				print("[Timeline] System loaded: %s"%[consumer_script])
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -52,8 +55,8 @@ func _process_due_events() -> void:
 		_dispatch_event(event)
 	if _heap.is_empty():
 		timeline_empty.emit()
-		#if EventBus:
-		#	EventBus.timeline_emptied.emit()
+		if EventBus:
+			EventBus.timeline_emptied.emit()
 
 func _dispatch_event(event: EventData) -> void:
 	#if EventBus:
