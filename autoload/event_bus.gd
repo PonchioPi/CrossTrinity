@@ -1,3 +1,4 @@
+@tool
 extends Node
 
 signal timeline_event_scheduled(event_data: EventData)
