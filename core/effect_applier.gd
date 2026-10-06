@@ -3,7 +3,7 @@ class_name EffectApplier
 
 signal effect_applied(effect_type: String, payload: Dictionary)
 
-func apply_rules(
+static func apply_rules(
 	context: ReactionContext,
 	rules: Array[RuleData]
 	) -> Array[EventData]:
