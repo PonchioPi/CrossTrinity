@@ -5,19 +5,57 @@ class_name ReactionContext
 @export var target_id: String = ""
 @export var environment_id: String = ""
 
-@export var tags: PackedStringArray
-@export var source_tags: PackedStringArray
-@export var target_tags: PackedStringArray
-@export var environment_tags: PackedStringArray
+var tags: PackedStringArray
+
+@export var source_tags: PackedStringArray:
+	set = set_source_tags
+@export var target_tags: PackedStringArray:
+	set = set_target_tags
+@export var environment_tags: PackedStringArray:
+	set = set_environment_tags
+
+var ids: PackedStringArray
+
+@export var source_ids: PackedStringArray:
+	set = set_source_ids
+@export var target_ids: PackedStringArray:
+	set = set_target_ids
+@export var environment_ids: PackedStringArray:
+	set = set_environment_ids
 
 @export var action_id: String
 @export var rule_group: String
-@export var seed : int = 0
+@export var context_seed : int = 0
 
 @export var flags: Dictionary[String, bool]
 @export var f_values: Dictionary[String, float]
 @export var i_values: Dictionary[String, int]
 @export var meta: Dictionary[String, Variant]
+
+#region Setters
+
+func set_source_tags(value:PackedStringArray) -> void:
+	source_tags = value
+
+func set_target_tags(value:PackedStringArray) -> void:
+	target_tags = value
+
+func set_environment_tags(value:PackedStringArray) -> void:
+	environment_tags = value
+
+func set_source_ids(value:PackedStringArray) -> void:
+	source_ids = value
+	refresh_ids()
+
+func set_target_ids(value:PackedStringArray) -> void:
+	target_ids = value
+	refresh_ids()
+
+func set_environment_ids(value:PackedStringArray) -> void:
+	environment_ids = value
+	refresh_ids()
+
+#endregion
 
 #region Getters
 func get_f_value(key:String, default_value:float = 0.0) -> float:
@@ -80,6 +118,11 @@ func merge_tags(extra_tags: PackedStringArray) -> void:
 		if not tags.has(tag):
 			tags.append(tag)
 
+func merge_ids(extra_ids: PackedStringArray) -> void:
+	for id in extra_ids:
+		if not ids.has(id):
+			ids.append(id)
+
 func clear_runtime_state() -> void:
 	flags.clear()
 	f_values.clear()
@@ -106,4 +149,9 @@ func duplicate_context() -> ReactionContext:
 	copy.i_values = i_values.duplicate()
 	copy.meta = meta.duplicate(true)
 	return copy
+
+func refresh_ids() -> void:
+	ids.clear()
+	ids = source_ids + target_ids + environment_ids + PackedStringArray([source_id, target_id, environment_id]) 
+
 #endregion
