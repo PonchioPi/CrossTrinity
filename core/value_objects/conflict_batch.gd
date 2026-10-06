@@ -35,6 +35,7 @@ var created_at: float = .0
 var open_until: float = .0
 var grace_until: float = .0
 var locked_at: float = .0
+var profile: ConflictProfile
 
 var inputs: Array[Dictionary]
 var result: Variant
@@ -45,31 +46,33 @@ var thresholds: Dictionary[ResponseType, PackedFloat32Array]
 
 func setup(
 	p_batch_id: String,
+	p_source_event: Dictionary,
 	p_category: String,
 	p_channel: String,
 	p_source_id: String,
 	p_target_ids: PackedStringArray,
-	p_source_event: EventData,
 	p_now: float,
 	p_open_duration: float,
 	p_grace_duration: float,
 	p_resolver: Callable,
-	p_thresholds: Dictionary[ResponseType, PackedFloat32Array] = {}
+	p_profile: ConflictProfile
 	) -> void:
 	batch_id = p_batch_id
+	source_event = p_source_event
 	category = p_category
 	channel = p_channel
 	source_id = p_source_id
 	target_ids = p_target_ids
-	source_event = p_source_event
 	created_at = p_now
 	open_until = p_now + maxf(p_open_duration, 0.0)
 	grace_until = open_until + maxf(p_grace_duration, 0.0)
 	resolver = p_resolver
-	thresholds = p_thresholds
+	thresholds = p_profile.thresholds
+	profile = p_profile
 	phase = BatchPhase.OPEN
 	batch_opened.emit(batch_id)
-	#EventBus.conflict_batch_created.emit(batch_id)
+	if EventBus:
+		EventBus.conflict_batch_created.emit(batch_id)
 
 func add_input(payload: Dictionary, now: float) -> bool:
 	if not is_active():
@@ -89,7 +92,27 @@ func add_input(payload: Dictionary, now: float) -> bool:
 	payload["sequence"] = sequence_counter
 	sequence_counter += 1
 	inputs.append(payload)
+
+	if profile.trigger_direct_input and \
+	inputs.size() >= profile.trigger_thresold:
+		var direct_input := _generate_direct_input(payload, now, profile)
+		direct_input["payload_i"] = inputs.size()
+		if EventBus:
+			EventBus.inputs_received.emit(direct_input)
+
+	if profile.limited_inputs and \
+	inputs.size() >= profile.input_threshold:
+		lock_and_resolve(now)
+
 	return true
+
+func _generate_direct_input(input: Dictionary, t: float, profile: ConflictProfile) -> Dictionary:
+	var direct := input.duplicate()
+	direct["event_id"] = profile.trigger_event_id
+	direct["generated"] = true
+	direct["generated_at"] = t
+	direct["source_batch"] = batch_id
+	return direct
 
 func evaluate_input(_payload:Dictionary, now:float) -> ResponseType:
 	var delta: float = abs(now - open_until)
